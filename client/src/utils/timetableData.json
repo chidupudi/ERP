@@ -1,0 +1,69 @@
+{
+  "timetable": [
+    {
+      "day": "Monday",
+      "schedule": [
+        { "time": "9:00 AM - 10:00 AM", "class": "CSE-A", "room": "201" },
+        { "time": "10:00 AM - 11:00 AM", "class": "DS-A", "room": "204" },
+        { "time": "11:00 AM - 12:00 PM", "class": "Break", "room": "" },
+        { "time": "12:00 PM - 1:00 PM", "class": "CSE-A", "room": "201" },
+        { "time": "1:00 PM - 2:00 PM", "class": "Lunch Break", "room": "" },
+        { "time": "2:00 PM - 3:00 PM", "class": "DS-A", "room": "204" },
+        { "time": "3:00 PM - 4:00 PM", "class": "", "room": "" },
+        { "time": "4:00 PM - 5:00 PM", "class": "Math-B", "room": "202" }
+      ]
+    },
+    {
+      "day": "Tuesday",
+      "schedule": [
+        { "time": "9:00 AM - 10:00 AM", "class": "DS-A", "room": "204" },
+        { "time": "10:00 AM - 11:00 AM", "class": "CSE-A", "room": "201" },
+        { "time": "11:00 AM - 12:00 PM", "class": "Break", "room": "" },
+        { "time": "12:00 PM - 1:00 PM", "class": "DS-A", "room": "204" },
+        { "time": "1:00 PM - 2:00 PM", "class": "Lunch Break", "room": "" },
+        { "time": "2:00 PM - 3:00 PM", "class": "CSE-A", "room": "201" },
+        { "time": "3:00 PM - 4:00 PM", "class": "Physics-C", "room": "203" },
+        { "time": "4:00 PM - 5:00 PM", "class": "", "room": "" }
+      ]
+    },
+    {
+      "day": "Wednesday",
+      "schedule": [
+        { "time": "9:00 AM - 10:00 AM", "class": "CSE-A", "room": "201" },
+        { "time": "10:00 AM - 11:00 AM", "class": "DS-A", "room": "204" },
+        { "time": "11:00 AM - 12:00 PM", "class": "Break", "room": "" },
+        { "time": "12:00 PM - 1:00 PM", "class": "CSE-A", "room": "201" },
+        { "time": "1:00 PM - 2:00 PM", "class": "Lunch Break", "room": "" },
+        { "time": "2:00 PM - 3:00 PM", "class": "DS-A", "room": "204" },
+        { "time": "3:00 PM - 4:00 PM", "class": "Chemistry-D", "room": "205" },
+        { "time": "4:00 PM - 5:00 PM", "class": "", "room": "" }
+      ]
+    },
+    {
+      "day": "Thursday",
+      "schedule": [
+        { "time": "9:00 AM - 10:00 AM", "class": "DS-A", "room": "204" },
+        { "time": "10:00 AM - 11:00 AM", "class": "CSE-A", "room": "201" },
+        { "time": "11:00 AM - 12:00 PM", "class": "Break", "room": "" },
+        { "time": "12:00 PM - 1:00 PM", "class": "DS-A", "room": "204" },
+        { "time": "1:00 PM - 2:00 PM", "class": "Lunch Break", "room": "" },
+        { "time": "2:00 PM - 3:00 PM", "class": "CSE-A", "room": "201" },
+        { "time": "3:00 PM - 4:00 PM", "class": "", "room": "" },
+        { "time": "4:00 PM - 5:00 PM", "class": "Math-B", "room": "202" }
+      ]
+    },
+    {
+      "day": "Friday",
+      "schedule": [
+        { "time": "9:00 AM - 10:00 AM", "class": "CSE-A", "room": "201" },
+        { "time": "10:00 AM - 11:00 AM", "class": "DS-A", "room": "204" },
+        { "time": "11:00 AM - 12:00 PM", "class": "Break", "room": "" },
+        { "time": "12:00 PM - 1:00 PM", "class": "CSE-A", "room": "201" },
+        { "time": "1:00 PM - 2:00 PM", "class": "Lunch Break", "room": "" },
+        { "time": "2:00 PM - 3:00 PM", "class": "DS-A", "room": "204" },
+        { "time": "3:00 PM - 4:00 PM", "class": "Physics-C", "room": "203" },
+        { "time": "4:00 PM - 5:00 PM", "class": "", "room": "" }
+      ]
+    }
+  ]
+}
