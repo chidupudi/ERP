@@ -79,18 +79,14 @@ function TimeTable() {
     e.preventDefault(); // Allow drop
   };
 
-  // Function to handle drop
   const handleDrop = (e, targetDay, targetTime) => {
     e.preventDefault();
     const data = JSON.parse(e.dataTransfer.getData('text/plain'));
     const { day: sourceDay, time: sourceTime, schedule } = data;
-
-    // Check if the source and target cells are the same
-    if (sourceDay === targetDay && sourceTime === targetTime) {
-      return; // Do nothing if dragging and dropping in the same cell
-    }
-
-    // Set reschedule data for confirmation dialog
+  
+    if (sourceDay === targetDay && sourceTime === targetTime) return; // No changes if same cell
+  
+    // Set the reschedule data for the confirmation dialog
     setRescheduleData({
       sourceDay,
       sourceTime,
@@ -100,10 +96,10 @@ function TimeTable() {
       room: schedule.room,
     });
 
-    // Open the confirmation dialog
+    // Open the reschedule confirmation dialog
     setIsRescheduleDialogOpen(true);
   };
-
+  
   // Function to confirm rescheduling
   const confirmReschedule = () => {
     const { sourceDay, sourceTime, targetDay, targetTime, class: className, room } = rescheduleData;
