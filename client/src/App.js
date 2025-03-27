@@ -1,17 +1,23 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
-import Sidebar from './components/Sidebar'; // Import Sidebar
+import Header from './Faculty/Components/Header';
+import AdminSidebar from './Admin/components/AdminSidebar';
+import Sidebar from './Faculty/Components/Sidebar';
+import LoginPage from './authentication/Login';
+import ForgotPage from './authentication/Forgot';
 
 function App() {
   return (
     <Router>
-      <Header />
+<Header/>
       <div style={{ display: 'flex' }}>
-        <Sidebar />
+        {/* <AdminSidebar/> */}
+         <Sidebar/> 
         <div style={{ flex: 1, padding: '20px' }}>
           <Routes>
-          
+          <Route path = "/login" element = {<LoginPage/>}/>
+          <Route path = "/forgotpassword" element = {<ForgotPage/>}/>
+        
           </Routes>
         </div>
       </div>
