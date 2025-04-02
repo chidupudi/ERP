@@ -10,11 +10,13 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Container from '@mui/material/Container';
+import { useNavigate } from 'react-router-dom';
 
 const pages = ['Home', 'Quick Tour', 'Feedback'];
 
 function Header() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const navigate = useNavigate();
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -24,6 +26,15 @@ function Header() {
     setAnchorElUser(null);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
+    // Redirect to login page
+    navigate('/login');
+    
+    // Optional: Force a full page refresh to reset application state
+    window.location.reload();
+  };
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -67,7 +78,7 @@ function Header() {
               onClose={handleCloseUserMenu}
             >
               <MenuItem onClick={handleCloseUserMenu}>Profile</MenuItem>
-              <MenuItem onClick={handleCloseUserMenu}>Logout</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </Box>
         </Toolbar>

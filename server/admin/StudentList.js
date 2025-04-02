@@ -68,7 +68,7 @@ const studentSchema = new mongoose.Schema({
   section: {
     type: String,
     required: true,
-    enum: ['A', 'B', 'C', 'D']
+    
   },
   password: {
     type: String,
@@ -137,6 +137,7 @@ if (!email.endsWith('@woxsen.edu.in')) {
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
+   
 
     // Remove password from response
     const studentResponse = student.toObject();

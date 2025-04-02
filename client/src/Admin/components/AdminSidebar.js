@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createTheme, styled } from '@mui/material/styles';
+import { createTheme  } from '@mui/material/styles';
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { PageContainer } from '@toolpad/core/PageContainer';
@@ -63,7 +63,7 @@ export default function AdminLayout({ children, window }) {
   const navigation = React.useMemo(() => getNavigation(), []);
   const router = useDemoRouter('/upload-timetable');
   const demoWindow = window ? window() : undefined;
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   return (
     <AppProvider navigation={navigation} router={router} theme={demoTheme} window={demoWindow}>

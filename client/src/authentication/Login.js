@@ -28,7 +28,7 @@ const theme = createTheme({
   },
 });
 
-function LoginPage() {
+function LoginPage({ setAuth }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -46,16 +46,16 @@ function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
+  
     try {
       if (!validateEmail(email)) {
         throw new Error(`Please use your ${isFaculty ? 'Woxsen faculty' : 'Woxsen student'} email address`);
       }
-
+  
       const endpoint = isFaculty 
         ? 'http://localhost:5000/api/faculty/login' 
         : 'http://localhost:5000/api/students/login';
-
+  
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -66,30 +66,44 @@ function LoginPage() {
           password
         }),
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.message || 'Login failed');
       }
-
-      // Store token and redirect
-      if (isFaculty) {
-        localStorage.setItem('facultyToken', data.token);
-        localStorage.setItem('facultyData', JSON.stringify(data.faculty));
-      } else {
-        localStorage.setItem('studentToken', data.token);
-        localStorage.setItem('studentData', JSON.stringify(data.student));
+  
+      // Store token in localStorage
+      localStorage.setItem('authToken', data.token);
+      
+      // Also store user data if needed
+      localStorage.setItem('userData', JSON.stringify(isFaculty ? data.faculty : data.student));
+  
+      const authData = {
+        token: data.token,
+        user: isFaculty ? data.faculty : data.student,
+        role: isFaculty ? 'faculty' : 'student',
+        timestamp: new Date().getTime()
+      };
+  
+      // Set auth state (for App.js to use)
+      if (setAuth) {
+        setAuth(authData);
       }
-      navigate('/dashboard');
-
+  
+      console.log('Login successful!');
+      console.log('Token stored in localStorage.authToken:', localStorage.getItem('authToken'));
+      console.log('User Data:', authData.user);
+  
+      navigate('/');
+  
     } catch (err) {
+      console.error('Login error:', err);
       setError(err.message || 'An error occurred during login');
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

@@ -4,6 +4,7 @@ const cors = require('cors');
 const app = express();
 const facultyRoutes = require('./admin/FacultyList');
 const studentsRoutes = require('./admin/StudentList');
+const timetableRoutes = require('./admin/Timetable');
 
 // Configuration
 const MONGO_URI = 'mongodb://localhost:27017/erpdb';
@@ -25,6 +26,8 @@ app.use(express.json());
 app.get('/', (req, res) => res.send('ERP Local Server Running'));
 app.use('/api/faculty', facultyRoutes);
 app.use('/api/students', studentsRoutes);
+app.use('/api/timetable', timetableRoutes);
+
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

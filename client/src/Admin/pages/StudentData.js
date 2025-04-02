@@ -1,4 +1,3 @@
-// StudentData.js (React component)
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -26,26 +25,35 @@ import {
   FormControl,
   InputLabel
 } from '@mui/material';
-import { School as SchoolIcon, Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
+import { 
+  School as SchoolIcon, 
+  Add as AddIcon, 
+  Delete as DeleteIcon, 
+  Edit as EditIcon,
+  Search as SearchIcon 
+} from '@mui/icons-material';
 import axios from 'axios';
 
 export default function StudentManagement() {
   const [studentList, setStudentList] = useState([]);
+  const [filteredStudents, setFilteredStudents] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentStudent, setCurrentStudent] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, id: null });
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     studentId: '',
-    school: 'SOA',
+    school: 'SOT', // Default to School of Technology
     phone: '',
     address: '',
     degree: 'B.Tech',
     year: '1',
-    section: 'A'
+    section: 'CSE-A'
   });
   const [errors, setErrors] = useState({
     firstName: false,
@@ -59,6 +67,24 @@ export default function StudentManagement() {
   useEffect(() => {
     fetchStudents();
   }, []);
+
+  // Filter students based on search term
+  useEffect(() => {
+    const filtered = studentList.filter(student => {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        student.firstName.toLowerCase().includes(searchLower) ||
+        student.lastName.toLowerCase().includes(searchLower) ||
+        student.email.toLowerCase().includes(searchLower) ||
+        student.studentId.toLowerCase().includes(searchLower) ||
+        student.school.toLowerCase().includes(searchLower) ||
+        student.degree.toLowerCase().includes(searchLower) ||
+        student.year.toLowerCase().includes(searchLower) ||
+        student.section.toLowerCase().includes(searchLower)
+      );
+    });
+    setFilteredStudents(filtered);
+  }, [searchTerm, studentList]);
 
   const fetchStudents = async () => {
     try {
@@ -84,6 +110,7 @@ export default function StudentManagement() {
       });
     }
   };
+
   const validateForm = () => {
     const newErrors = {
       firstName: !formData.firstName.trim(),
@@ -138,14 +165,24 @@ export default function StudentManagement() {
     setOpenDialog(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDeleteClick = (id) => {
+    setDeleteConfirm({ open: true, id });
+  };
+
+  const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/students/${id}`);
+      await axios.delete(`http://localhost:5000/api/students/${deleteConfirm.id}`);
       showSnackbar('Student deleted successfully', 'success');
       fetchStudents();
     } catch (error) {
       showSnackbar('Failed to delete student', 'error');
+    } finally {
+      setDeleteConfirm({ open: false, id: null });
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirm({ open: false, id: null });
   };
 
   const handleAddNew = () => {
@@ -154,12 +191,12 @@ export default function StudentManagement() {
       lastName: '',
       email: '',
       studentId: '',
-      school: 'SOA',
+      school: 'SOT',
       phone: '',
       address: '',
       degree: 'B.Tech',
       year: '1',
-      section: 'A'
+      section: 'CSE-A'
     });
     setCurrentStudent(null);
     setEditMode(false);
@@ -185,6 +222,10 @@ export default function StudentManagement() {
     setSnackbar({ ...snackbar, open: false });
   };
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Card sx={{ mb: 3 }}>
@@ -204,6 +245,22 @@ export default function StudentManagement() {
         </CardContent>
       </Card>
 
+      {/* Search Bar */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <TextField
+            fullWidth
+            variant="outlined"
+            placeholder="Search students..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            InputProps={{
+              startAdornment: <SearchIcon sx={{ mr: 1, color: 'action.active' }} />
+            }}
+          />
+        </CardContent>
+      </Card>
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -219,7 +276,7 @@ export default function StudentManagement() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {studentList.map((student) => (
+            {filteredStudents.map((student) => (
               <TableRow key={student._id}>
                 <TableCell>{student.firstName} {student.lastName}</TableCell>
                 <TableCell>{student.email}</TableCell>
@@ -232,7 +289,7 @@ export default function StudentManagement() {
                   <IconButton color="primary" onClick={() => handleEdit(student)}>
                     <EditIcon />
                   </IconButton>
-                  <IconButton color="error" onClick={() => handleDelete(student._id)}>
+                  <IconButton color="error" onClick={() => handleDeleteClick(student._id)}>
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>
@@ -266,12 +323,12 @@ export default function StudentManagement() {
               helperText={errors.lastName && 'Last name is required'}
             />
             <TextField
-               fullWidth
-               label="Email"
-               name="email"
-               value={formData.email}
-               onChange={handleInputChange}
-               error={errors.email}
+              fullWidth
+              label="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              error={errors.email}
               helperText={errors.email ? 'Email must end with @woxsen.edu.in' : ''}
             />
             <TextField
@@ -358,10 +415,9 @@ export default function StudentManagement() {
                 label="Section"
                 onChange={handleInputChange}
               >
-                <MenuItem value="A">A</MenuItem>
-                <MenuItem value="B">B</MenuItem>
-                <MenuItem value="C">C</MenuItem>
-                <MenuItem value="D">D</MenuItem>
+                <MenuItem value="CSE-A">CSE-A</MenuItem>
+                <MenuItem value="CSE-B">CSE-B</MenuItem>
+                <MenuItem value="CSE-C">CSE-C</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -370,6 +426,23 @@ export default function StudentManagement() {
           <Button onClick={handleCloseDialog}>Cancel</Button>
           <Button onClick={handleSubmit} variant="contained">
             {editMode ? 'Update' : 'Add'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirm.open}
+        onClose={handleDeleteCancel}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this student?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel}>Cancel</Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+            Delete
           </Button>
         </DialogActions>
       </Dialog>

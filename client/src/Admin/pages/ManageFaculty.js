@@ -25,21 +25,30 @@ import {
   FormControl,
   InputLabel
 } from '@mui/material';
-import { People as PeopleIcon, Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
+import { 
+  People as PeopleIcon, 
+  Add as AddIcon, 
+  Delete as DeleteIcon, 
+  Edit as EditIcon,
+  Search as SearchIcon 
+} from '@mui/icons-material';
 import axios from 'axios';
 
 export default function FacultyManagement() {
   const [facultyList, setFacultyList] = useState([]);
+  const [filteredFaculty, setFilteredFaculty] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentFaculty, setCurrentFaculty] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, id: null });
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     employeeId: '',
-    school: 'SOA',
+    school: 'SOT', // Default to School of Technology
     phone: '',
     address: '',
     role: 'faculty'
@@ -56,6 +65,22 @@ export default function FacultyManagement() {
   useEffect(() => {
     fetchFaculty();
   }, []);
+
+  // Filter faculty based on search term
+  useEffect(() => {
+    const filtered = facultyList.filter(faculty => {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        faculty.firstName.toLowerCase().includes(searchLower) ||
+        faculty.lastName.toLowerCase().includes(searchLower) ||
+        faculty.email.toLowerCase().includes(searchLower) ||
+        faculty.employeeId.toLowerCase().includes(searchLower) ||
+        faculty.school.toLowerCase().includes(searchLower) ||
+        faculty.role.toLowerCase().includes(searchLower)
+      );
+    });
+    setFilteredFaculty(filtered);
+  }, [searchTerm, facultyList]);
 
   const fetchFaculty = async () => {
     try {
@@ -134,14 +159,24 @@ export default function FacultyManagement() {
     setOpenDialog(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDeleteClick = (id) => {
+    setDeleteConfirm({ open: true, id });
+  };
+
+  const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/faculty/${id}`);
+      await axios.delete(`http://localhost:5000/api/faculty/${deleteConfirm.id}`);
       showSnackbar('Faculty deleted successfully', 'success');
       fetchFaculty();
     } catch (error) {
       showSnackbar('Failed to delete faculty', 'error');
+    } finally {
+      setDeleteConfirm({ open: false, id: null });
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirm({ open: false, id: null });
   };
 
   const handleAddNew = () => {
@@ -150,7 +185,7 @@ export default function FacultyManagement() {
       lastName: '',
       email: '',
       employeeId: '',
-      school: 'SOA',
+      school: 'SOT',
       phone: '',
       address: '',
       role: 'faculty'
@@ -179,6 +214,10 @@ export default function FacultyManagement() {
     setSnackbar({ ...snackbar, open: false });
   };
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Card sx={{ mb: 3 }}>
@@ -198,6 +237,22 @@ export default function FacultyManagement() {
         </CardContent>
       </Card>
 
+      {/* Search Bar */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <TextField
+            fullWidth
+            variant="outlined"
+            placeholder="Search faculty..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            InputProps={{
+              startAdornment: <SearchIcon sx={{ mr: 1, color: 'action.active' }} />
+            }}
+          />
+        </CardContent>
+      </Card>
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -211,7 +266,7 @@ export default function FacultyManagement() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {facultyList.map((faculty) => (
+            {filteredFaculty.map((faculty) => (
               <TableRow key={faculty._id}>
                 <TableCell>{faculty.firstName} {faculty.lastName}</TableCell>
                 <TableCell>{faculty.email}</TableCell>
@@ -222,7 +277,7 @@ export default function FacultyManagement() {
                   <IconButton color="primary" onClick={() => handleEdit(faculty)}>
                     <EditIcon />
                   </IconButton>
-                  <IconButton color="error" onClick={() => handleDelete(faculty._id)}>
+                  <IconButton color="error" onClick={() => handleDeleteClick(faculty._id)}>
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>
@@ -326,6 +381,23 @@ export default function FacultyManagement() {
           <Button onClick={handleCloseDialog}>Cancel</Button>
           <Button onClick={handleSubmit} variant="contained">
             {editMode ? 'Update' : 'Add'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirm.open}
+        onClose={handleDeleteCancel}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this faculty member?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel}>Cancel</Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+            Delete
           </Button>
         </DialogActions>
       </Dialog>

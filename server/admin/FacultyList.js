@@ -94,6 +94,18 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+const isAdminUser = (email, password) => {
+  const admins = [
+    { email: 'admin1@woxsen.edu.in', password: 'admin123' },
+    { email: 'admin2@woxsen.edu.in', password: 'admin456' }
+  ];
+  
+  return admins.some(admin => 
+    admin.email === email && admin.password === password
+  );
+};
+
+// Modified login route
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -103,32 +115,46 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Only Woxsen email addresses are allowed' });
     }
 
+    // Check if it's an admin user
+    if (isAdminUser(email, password)) {
+      // Create admin token
+      const token = jwt.sign(
+        { 
+          id: 'admin-' + email.split('@')[0],
+          email: email,
+          role: 'admin'  // Explicitly set role to admin
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+
+      return res.json({ 
+        message: 'Admin login successful',
+        token,
+        user: { email, role: 'admin' }
+      });
+    }
+
+    // Regular faculty login flow
     const faculty = await Faculty.findOne({ email });
     if (!faculty) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Compare plain text password (INSECURE)
     if (password !== faculty.password) {
       return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    // Create token
-    if (!process.env.JWT_SECRET) {
-      throw new Error('JWT secret is not configured');
     }
 
     const token = jwt.sign(
       { 
         id: faculty._id, 
         email: faculty.email,
-        role: faculty.role
+        role: faculty.role || 'faculty'  // Default to faculty if no role set
       },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
 
-    // Remove password from response
     const facultyResponse = faculty.toObject();
     delete facultyResponse.password;
 
@@ -140,11 +166,7 @@ router.post('/login', async (req, res) => {
 
   } catch (err) {
     console.error('Login error:', err);
-    res.status(500).json({ 
-      message: err.message === 'JWT secret is not configured' 
-        ? 'Server configuration error' 
-        : 'Login failed. Please try again.' 
-    });
+    res.status(500).json({ message: 'Login failed. Please try again.' });
   }
 });
 
